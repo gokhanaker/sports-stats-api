@@ -1,4 +1,4 @@
-package com.applab.sportsstats.sports_stats_api.model;
+package com.applab.sportsstats.sports_stats_api.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

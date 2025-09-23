@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.applab.sportsstats.sports_stats_api.model.Stats;
+import com.applab.sportsstats.sports_stats_api.entity.Stats;
 
 @Repository
 public interface StatsRepository extends JpaRepository<Stats, Long> {

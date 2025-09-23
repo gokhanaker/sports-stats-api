@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.applab.sportsstats.sports_stats_api.model.Team;
+import com.applab.sportsstats.sports_stats_api.entity.Team;
 
 import java.util.List;
 import java.util.Optional;

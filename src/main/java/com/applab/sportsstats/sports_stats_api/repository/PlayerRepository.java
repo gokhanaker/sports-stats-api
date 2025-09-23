@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.applab.sportsstats.sports_stats_api.entity.Player;
-import com.applab.sportsstats.sports_stats_api.entity.Position;
+import com.applab.sportsstats.sports_stats_api.enums.Position;
 
 import java.util.List;
 import java.util.Optional;

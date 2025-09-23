@@ -1,6 +1,7 @@
 package com.applab.sportsstats.sports_stats_api.config;
 
 import com.applab.sportsstats.sports_stats_api.entity.*;
+import com.applab.sportsstats.sports_stats_api.enums.Position;
 import com.applab.sportsstats.sports_stats_api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

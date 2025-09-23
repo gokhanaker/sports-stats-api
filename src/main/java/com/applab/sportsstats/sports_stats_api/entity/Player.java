@@ -3,8 +3,11 @@ package com.applab.sportsstats.sports_stats_api.entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.applab.sportsstats.sports_stats_api.enums.Position;
+
 import jakarta.persistence.*;
 import lombok.*;
+
 
 @Entity
 @Table(name = "players")

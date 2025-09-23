@@ -1,4 +1,4 @@
-package com.applab.sportsstats.sports_stats_api.entity;
+package com.applab.sportsstats.sports_stats_api.enums;
 
 public enum Position {
     POINT_GUARD("PG"),

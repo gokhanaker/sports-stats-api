@@ -19,8 +19,8 @@ public interface StatsRepository extends JpaRepository<Stats, Long> {
     @Query("SELECT s FROM Stats s WHERE s.player.id = :playerId AND s.match.id = :matchId")
     Stats findByPlayerIdAndMatchId(@Param("playerId") Long playerId, @Param("matchId") Long matchId);
     
-    @Query("SELECT s FROM Stats s WHERE s.goals > :minGoals")
-    List<Stats> findPlayersWithMinGoals(@Param("minGoals") Integer minGoals);
+    @Query("SELECT s FROM Stats s JOIN s.player p WHERE s.points >= :minPoints")
+    List<Stats> findPlayersWithMinimumPoints(@Param("minPoints") Integer minPoints);
     
     @Query("SELECT s FROM Stats s WHERE s.player.id = :playerId ORDER BY s.points DESC")
     List<Stats> findByPlayerIdOrderByPointsDesc(@Param("playerId") Long playerId);

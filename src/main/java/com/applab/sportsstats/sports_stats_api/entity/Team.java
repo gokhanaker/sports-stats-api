@@ -25,10 +25,10 @@ public class Team {
     private String city;
 
     @Column(name = "founded_year")
-    private String foundedYear;
+    private Integer foundedYear;
 
     @Column(name = "home_stadium")
-    private String home_stadium;
+    private String homeStadium;
 
     @Column(name = "championships_won")
     private Integer championshipsWon;
@@ -47,7 +47,10 @@ public class Team {
     @Column(name= "created_at", nullable = false, updatable = false)
     private LocalDate createdAt;
 
+    @PrePersist
     protected void onCreate() {
-         createdAt = LocalDate.now();
+        if(createdAt == null) {
+            createdAt = LocalDate.now();
+        }
     }
 }

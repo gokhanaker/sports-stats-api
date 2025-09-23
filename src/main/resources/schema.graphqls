@@ -1,0 +1,295 @@
+# Sports Stats GraphQL Schema
+
+# Scalar types
+scalar Date
+scalar DateTime
+
+# Enums
+enum Position {
+  POINT_GUARD
+  SHOOTING_GUARD
+  SMALL_FORWARD
+  POWER_FORWARD
+  CENTER
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+# Core Types
+type Team {
+  id: ID!
+  name: String!
+  city: String!
+  foundedYear: Int
+  coachName: String
+  homeStadium: String
+  createdAt: Date
+  players: [Player!]!
+  matches: [Match!]!
+
+  # Computed fields
+  totalWins: Int!
+  totalLosses: Int!
+  winPercentage: Float!
+}
+
+type Player {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+  jerseyNumber: Int!
+  position: Position!
+  dateOfBirth: Date
+  height: Int # in cm
+  weight: Int # in kg
+  team: Team!
+  stats: [Stats!]!
+  createdAt: Date
+
+  # Computed fields
+  age: Int
+  averagePoints: Float!
+  averageAssists: Float!
+  averageRebounds: Float!
+  totalGamesPlayed: Int!
+}
+
+type Match {
+  id: ID!
+  matchDate: DateTime!
+  venue: String!
+  status: MatchStatus!
+  homeTeam: Team!
+  awayTeam: Team!
+  homeTeamScore: Int
+  awayTeamScore: Int
+  teams: [Team!]!
+  stats: [Stats!]!
+  createdAt: DateTime
+
+  # Computed fields
+  winner: Team
+  isTie: Boolean!
+  totalPoints: Int!
+  isFinished: Boolean!
+}
+
+type Stats {
+  id: ID!
+  player: Player!
+  match: Match!
+  points: Int!
+  assists: Int!
+  rebounds: Int!
+  steals: Int!
+  blocks: Int!
+  fieldGoalsMade: Int!
+  fieldGoalsAttempted: Int!
+  threePointersMade: Int!
+  threePointersAttempted: Int!
+  freeThrowsMade: Int!
+  freeThrowsAttempted: Int!
+  minutesPlayed: Int
+  createdAt: DateTime
+
+  # Computed fields
+  fieldGoalPercentage: Float!
+  threePointPercentage: Float!
+  freeThrowPercentage: Float!
+}
+
+# Input Types for Mutations
+input CreateTeamInput {
+  name: String!
+  city: String!
+  foundedYear: Int
+  coachName: String
+  homeStadium: String
+}
+
+input UpdateTeamInput {
+  id: ID!
+  name: String
+  city: String
+  foundedYear: Int
+  coachName: String
+  homeStadium: String
+}
+
+input CreatePlayerInput {
+  firstName: String!
+  lastName: String!
+  jerseyNumber: Int!
+  position: Position!
+  dateOfBirth: Date
+  height: Int
+  weight: Int
+  teamId: ID!
+}
+
+input UpdatePlayerInput {
+  id: ID!
+  firstName: String
+  lastName: String
+  jerseyNumber: Int
+  position: Position
+  dateOfBirth: Date
+  height: Int
+  weight: Int
+  teamId: ID
+}
+
+input CreateMatchInput {
+  matchDate: DateTime!
+  venue: String!
+  homeTeamId: ID!
+  awayTeamId: ID!
+}
+
+input UpdateMatchScoreInput {
+  matchId: ID!
+  homeTeamScore: Int!
+  awayTeamScore: Int!
+  status: MatchStatus!
+}
+
+input RecordStatsInput {
+  playerId: ID!
+  matchId: ID!
+  points: Int!
+  assists: Int!
+  rebounds: Int!
+  steals: Int!
+  blocks: Int!
+  fieldGoalsMade: Int!
+  fieldGoalsAttempted: Int!
+  threePointersMade: Int!
+  threePointersAttempted: Int!
+  freeThrowsMade: Int!
+  freeThrowsAttempted: Int!
+  minutesPlayed: Int
+}
+
+# Filter and Sorting Input Types
+input PlayerFilter {
+  teamId: ID
+  position: Position
+  minPoints: Int
+  maxPoints: Int
+}
+
+input MatchFilter {
+  teamId: ID
+  status: MatchStatus
+  dateFrom: DateTime
+  dateTo: DateTime
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input PlayerSort {
+  field: PlayerSortField!
+  order: SortOrder!
+}
+
+enum PlayerSortField {
+  FIRST_NAME
+  LAST_NAME
+  JERSEY_NUMBER
+  POINTS
+  ASSISTS
+  REBOUNDS
+}
+
+# Leaderboard Types
+type LeaderboardEntry {
+  player: Player!
+  value: Float!
+  rank: Int!
+}
+
+type Leaderboard {
+  category: String!
+  entries: [LeaderboardEntry!]!
+  lastUpdated: DateTime!
+}
+
+# Query Root
+type Query {
+  # Team Queries
+  teams: [Team!]!
+  team(id: ID!): Team
+  teamByName(name: String!): Team
+  teamsByCity(city: String!): [Team!]!
+
+  # Player Queries
+  players(filter: PlayerFilter, sort: PlayerSort, limit: Int): [Player!]!
+  player(id: ID!): Player
+  playersByTeam(teamId: ID!): [Player!]!
+  playersByPosition(position: Position!): [Player!]!
+
+  # Match Queries
+  matches(filter: MatchFilter, limit: Int): [Match!]!
+  match(id: ID!): Match
+  liveMatches: [Match!]!
+  upcomingMatches: [Match!]!
+  matchesByTeam(teamId: ID!): [Match!]!
+
+  # Stats Queries
+  playerStats(playerId: ID!): [Stats!]!
+  matchStats(matchId: ID!): [Stats!]!
+
+  # Leaderboard Queries
+  pointsLeaderboard(limit: Int): Leaderboard!
+  assistsLeaderboard(limit: Int): Leaderboard!
+  reboundsLeaderboard(limit: Int): Leaderboard!
+
+  # Search
+  searchPlayers(query: String!): [Player!]!
+}
+
+# Mutation Root
+type Mutation {
+  # Team Mutations
+  createTeam(input: CreateTeamInput!): Team!
+  updateTeam(input: UpdateTeamInput!): Team!
+  deleteTeam(id: ID!): Boolean!
+
+  # Player Mutations
+  createPlayer(input: CreatePlayerInput!): Player!
+  updatePlayer(input: UpdatePlayerInput!): Player!
+  deletePlayer(id: ID!): Boolean!
+
+  # Match Mutations
+  createMatch(input: CreateMatchInput!): Match!
+  updateMatchScore(input: UpdateMatchScoreInput!): Match!
+  startMatch(matchId: ID!): Match!
+  endMatch(matchId: ID!): Match!
+
+  # Stats Mutations
+  recordStats(input: RecordStatsInput!): Stats!
+  updateStats(input: RecordStatsInput!): Stats!
+}
+
+# Subscription Root
+type Subscription {
+  # Live Match Updates
+  matchScoreUpdated(matchId: ID!): Match!
+  liveMatchUpdates: Match!
+
+  # Leaderboard Updates
+  leaderboardUpdated(category: String!): Leaderboard!
+
+  # Team Updates
+  teamStatsUpdated(teamId: ID!): Team!
+}

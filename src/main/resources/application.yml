@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: sports-stats-api
+
+  # H2 Database configuration
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: password
+
+  # JPA/Hibernate configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  # H2 Console (for development/testing)
+  h2:
+    console:
+      enabled: true

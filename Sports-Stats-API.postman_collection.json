@@ -1,0 +1,521 @@
+{
+  "info": {
+    "_postman_id": "sports-stats-api-collection",
+    "name": "Sports Stats API",
+    "description": "GraphQL API for managing sports statistics including teams, players, matches, and statistics",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "Get All Teams",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teams { id name city foundedYear coachName homeStadium totalWins totalLosses winPercentage } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Retrieve all teams with their basic information and statistics"
+          }
+        },
+        {
+          "name": "Get Team by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ team(id: 1) { id name city foundedYear coachName homeStadium totalWins totalLosses winPercentage players { firstName lastName jerseyNumber position } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get a specific team by ID with its players"
+          }
+        },
+        {
+          "name": "Get Team by Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamByName(name: \\\"Lakers\\\") { id name city foundedYear coachName homeStadium players { firstName lastName } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Find a team by its name"
+          }
+        },
+        {
+          "name": "Get Teams by City",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamsByCity(city: \\\"Los Angeles\\\") { id name city foundedYear coachName homeStadium } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all teams from a specific city"
+          }
+        }
+      ],
+      "description": "Team-related GraphQL queries"
+    },
+    {
+      "name": "Players",
+      "item": [
+        {
+          "name": "Get All Players",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ players { id firstName lastName fullName jerseyNumber position dateOfBirth height weight team { name } averagePoints averageAssists averageRebounds totalGamesPlayed } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all players with their statistics and team information"
+          }
+        },
+        {
+          "name": "Get Player by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ player(id: 1) { id firstName lastName fullName jerseyNumber position dateOfBirth height weight age team { name city } averagePoints averageAssists averageRebounds totalGamesPlayed } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get a specific player by ID with detailed information"
+          }
+        },
+        {
+          "name": "Get Players by Team",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersByTeam(teamId: 1) { id firstName lastName jerseyNumber position averagePoints averageAssists averageRebounds } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all players from a specific team"
+          }
+        },
+        {
+          "name": "Get Players by Position",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersByPosition(position: POINT_GUARD) { id firstName lastName jerseyNumber team { name } averagePoints averageAssists } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all players playing a specific position (POINT_GUARD, SHOOTING_GUARD, SMALL_FORWARD, POWER_FORWARD, CENTER)"
+          }
+        }
+      ],
+      "description": "Player-related GraphQL queries"
+    },
+    {
+      "name": "Matches",
+      "item": [
+        {
+          "name": "Get All Matches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matches { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } isTie totalPoints isFinished } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all matches with team and score information"
+          }
+        },
+        {
+          "name": "Get Match by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ match(id: 1) { id matchDate venue status homeTeam { name city } awayTeam { name city } homeTeamScore awayTeamScore winner { name } isTie totalPoints isFinished } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get a specific match by ID"
+          }
+        },
+        {
+          "name": "Get Live Matches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ liveMatches { id matchDate venue homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all currently live matches"
+          }
+        },
+        {
+          "name": "Get Matches by Team",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesByTeam(teamId: 1) { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all matches for a specific team"
+          }
+        }
+      ],
+      "description": "Match-related GraphQL queries"
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Player Stats",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playerStats(playerId: 1) { id points assists rebounds steals blocks fieldGoalsMade fieldGoalsAttempted threePointersMade threePointersAttempted freeThrowsMade freeThrowsAttempted minutesPlayed fieldGoalPercentage threePointPercentage freeThrowPercentage match { matchDate venue homeTeam { name } awayTeam { name } } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all statistics for a specific player"
+          }
+        },
+        {
+          "name": "Get Match Stats",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchStats(matchId: 1) { id points assists rebounds steals blocks fieldGoalPercentage threePointPercentage freeThrowPercentage player { firstName lastName team { name } } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all player statistics for a specific match"
+          }
+        }
+      ],
+      "description": "Statistics-related GraphQL queries"
+    },
+    {
+      "name": "Leaderboards",
+      "item": [
+        {
+          "name": "Points Leaderboard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ pointsLeaderboard(limit: 10) { category entries { rank value player { firstName lastName team { name } } } lastUpdated } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get top 10 players by points scored"
+          }
+        },
+        {
+          "name": "Assists Leaderboard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ assistsLeaderboard(limit: 10) { category entries { rank value player { firstName lastName team { name } } } lastUpdated } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get top 10 players by assists"
+          }
+        },
+        {
+          "name": "Rebounds Leaderboard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ reboundsLeaderboard(limit: 10) { category entries { rank value player { firstName lastName team { name } } } lastUpdated } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get top 10 players by rebounds"
+          }
+        }
+      ],
+      "description": "Leaderboard-related GraphQL queries"
+    },
+    {
+      "name": "Advanced Queries",
+      "item": [
+        {
+          "name": "Search Players",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ searchPlayers(query: \\\"James\\\") { id firstName lastName fullName jerseyNumber position team { name } averagePoints } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Search for players by name"
+          }
+        },
+        {
+          "name": "Upcoming Matches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ upcomingMatches { id matchDate venue status homeTeam { name } awayTeam { name } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get all upcoming matches"
+          }
+        },
+        {
+          "name": "Complex Team Query with Relations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teams { id name city foundedYear totalWins totalLosses winPercentage players { firstName lastName position averagePoints } matches { matchDate status homeTeamScore awayTeamScore } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get teams with all related players and matches"
+          }
+        }
+      ],
+      "description": "Advanced GraphQL queries with complex relationships"
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "GraphQL Introspection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ __schema { types { name } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get GraphQL schema information"
+          }
+        }
+      ],
+      "description": "Health check and schema introspection queries"
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8090",
+      "type": "string"
+    }
+  ]
+}

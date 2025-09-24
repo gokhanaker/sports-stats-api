@@ -1,10 +1,11 @@
+# Moved schema file to correct folder for Spring Boot GraphQL auto-detection
+# (Previously at src/main/resources/schema.graphqls which is NOT auto-scanned)
+
 # Sports Stats GraphQL Schema
 
-# Scalar types
 scalar Date
 scalar DateTime
 
-# Enums
 enum Position {
   POINT_GUARD
   SHOOTING_GUARD
@@ -21,7 +22,6 @@ enum MatchStatus {
   POSTPONED
 }
 
-# Core Types
 type Team {
   id: ID!
   name: String!
@@ -32,8 +32,6 @@ type Team {
   createdAt: Date
   players: [Player!]!
   matches: [Match!]!
-
-  # Computed fields
   totalWins: Int!
   totalLosses: Int!
   winPercentage: Float!
@@ -47,13 +45,11 @@ type Player {
   jerseyNumber: Int!
   position: Position!
   dateOfBirth: Date
-  height: Int # in cm
-  weight: Int # in kg
+  height: Int
+  weight: Int
   team: Team!
   stats: [Stats!]!
   createdAt: Date
-
-  # Computed fields
   age: Int
   averagePoints: Float!
   averageAssists: Float!
@@ -73,8 +69,6 @@ type Match {
   teams: [Team!]!
   stats: [Stats!]!
   createdAt: DateTime
-
-  # Computed fields
   winner: Team
   isTie: Boolean!
   totalPoints: Int!
@@ -98,14 +92,11 @@ type Stats {
   freeThrowsAttempted: Int!
   minutesPlayed: Int
   createdAt: DateTime
-
-  # Computed fields
   fieldGoalPercentage: Float!
   threePointPercentage: Float!
   freeThrowPercentage: Float!
 }
 
-# Input Types for Mutations
 input CreateTeamInput {
   name: String!
   city: String!
@@ -177,7 +168,6 @@ input RecordStatsInput {
   minutesPlayed: Int
 }
 
-# Filter and Sorting Input Types
 input PlayerFilter {
   teamId: ID
   position: Position
@@ -211,7 +201,6 @@ enum PlayerSortField {
   REBOUNDS
 }
 
-# Leaderboard Types
 type LeaderboardEntry {
   player: Player!
   value: Float!
@@ -224,72 +213,46 @@ type Leaderboard {
   lastUpdated: DateTime!
 }
 
-# Query Root
 type Query {
-  # Team Queries
   teams: [Team!]!
   team(id: ID!): Team
   teamByName(name: String!): Team
   teamsByCity(city: String!): [Team!]!
-
-  # Player Queries
   players(filter: PlayerFilter, sort: PlayerSort, limit: Int): [Player!]!
   player(id: ID!): Player
   playersByTeam(teamId: ID!): [Player!]!
   playersByPosition(position: Position!): [Player!]!
-
-  # Match Queries
   matches(filter: MatchFilter, limit: Int): [Match!]!
   match(id: ID!): Match
   liveMatches: [Match!]!
   upcomingMatches: [Match!]!
   matchesByTeam(teamId: ID!): [Match!]!
-
-  # Stats Queries
   playerStats(playerId: ID!): [Stats!]!
   matchStats(matchId: ID!): [Stats!]!
-
-  # Leaderboard Queries
   pointsLeaderboard(limit: Int): Leaderboard!
   assistsLeaderboard(limit: Int): Leaderboard!
   reboundsLeaderboard(limit: Int): Leaderboard!
-
-  # Search
   searchPlayers(query: String!): [Player!]!
 }
 
-# Mutation Root
 type Mutation {
-  # Team Mutations
   createTeam(input: CreateTeamInput!): Team!
   updateTeam(input: UpdateTeamInput!): Team!
   deleteTeam(id: ID!): Boolean!
-
-  # Player Mutations
   createPlayer(input: CreatePlayerInput!): Player!
   updatePlayer(input: UpdatePlayerInput!): Player!
   deletePlayer(id: ID!): Boolean!
-
-  # Match Mutations
   createMatch(input: CreateMatchInput!): Match!
   updateMatchScore(input: UpdateMatchScoreInput!): Match!
   startMatch(matchId: ID!): Match!
   endMatch(matchId: ID!): Match!
-
-  # Stats Mutations
   recordStats(input: RecordStatsInput!): Stats!
   updateStats(input: RecordStatsInput!): Stats!
 }
 
-# Subscription Root
 type Subscription {
-  # Live Match Updates
   matchScoreUpdated(matchId: ID!): Match!
   liveMatchUpdates: Match!
-
-  # Leaderboard Updates
   leaderboardUpdated(category: String!): Leaderboard!
-
-  # Team Updates
   teamStatsUpdated(teamId: ID!): Team!
 }

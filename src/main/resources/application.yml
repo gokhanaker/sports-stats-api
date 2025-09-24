@@ -8,11 +8,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: admin
     password: password
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 20000
-      idle-timeout: 300000
 
   # JPA/Hibernate configuration
   jpa:
@@ -22,32 +17,30 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: true
-        use_sql_comments: true
+        "[format_sql]": true
 
   # H2 Console configuration
   h2:
     console:
       enabled: true
       path: /h2-console
-      settings:
-        web-allow-others: false
 
-  # GraphQL Configuration
+  # GraphQL Configuration (simplified)
   graphql:
     graphiql:
       enabled: true
-      path: /graphiql
+    schema:
+      printer:
+        enabled: true
+    http:
+      path: /graphql # GraphQL endpoint path
 
 # Server configuration
 server:
-  port: 8080
-  servlet:
-    context-path: /api
+  port: 8090
 
 # Logging configuration
 logging:
   level:
-    com.applab.sportsstats.sports_stats_api: DEBUG
-    org.springframework.web: DEBUG
     root: INFO
+    "[com.applab.sportsstats.sports_stats_api]": DEBUG

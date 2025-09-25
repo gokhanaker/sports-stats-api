@@ -5,6 +5,7 @@
 
 scalar Date
 scalar DateTime
+scalar Long
 
 enum Position {
   POINT_GUARD
@@ -201,6 +202,51 @@ enum PlayerSortField {
   REBOUNDS
 }
 
+# Pagination Support
+input PaginationInput {
+  page: Int = 0
+  size: Int = 10
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+input SortInput {
+  field: String!
+  direction: SortDirection = ASC
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalPages: Int!
+  totalElements: Long!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type TeamConnection {
+  content: [Team!]!
+  pageInfo: PageInfo!
+}
+
+type PlayerConnection {
+  content: [Player!]!
+  pageInfo: PageInfo!
+}
+
+type MatchConnection {
+  content: [Match!]!
+  pageInfo: PageInfo!
+}
+
+type StatsConnection {
+  content: [Stats!]!
+  pageInfo: PageInfo!
+}
+
 type LeaderboardEntry {
   player: Player!
   value: Float!
@@ -214,6 +260,7 @@ type Leaderboard {
 }
 
 type Query {
+  # Existing non-paginated queries
   teams: [Team!]!
   team(id: ID!): Team
   teamByName(name: String!): Team
@@ -232,7 +279,18 @@ type Query {
   pointsLeaderboard(limit: Int): Leaderboard!
   assistsLeaderboard(limit: Int): Leaderboard!
   reboundsLeaderboard(limit: Int): Leaderboard!
-  searchPlayers(query: String!): [Player!]!
+  searchPlayers(name: String!): [Player!]!
+  
+  # New paginated queries
+  teamsPaginated(pagination: PaginationInput, sort: SortInput): TeamConnection!
+  playersPaginated(pagination: PaginationInput, sort: SortInput): PlayerConnection!
+  matchesPaginated(pagination: PaginationInput, sort: SortInput): MatchConnection!
+  statsPaginated(pagination: PaginationInput, sort: SortInput): StatsConnection!
+  
+  # Paginated search and filtering
+  searchPlayersPaginated(name: String!, pagination: PaginationInput, sort: SortInput): PlayerConnection!
+  playersByTeamPaginated(teamId: ID!, pagination: PaginationInput, sort: SortInput): PlayerConnection!
+  matchesByTeamPaginated(teamId: ID!, pagination: PaginationInput, sort: SortInput): MatchConnection!
 }
 
 type Mutation {

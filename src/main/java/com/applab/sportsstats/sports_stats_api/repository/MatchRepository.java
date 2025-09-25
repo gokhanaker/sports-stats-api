@@ -1,5 +1,7 @@
 package com.applab.sportsstats.sports_stats_api.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +34,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     
     @Query("SELECT m FROM Match m WHERE m.matchDate > :currentDate ORDER BY m.matchDate ASC")
     List<Match> findUpcomingMatches(@Param("currentDate") LocalDateTime currentDate);
+    
+    // Paginated version
+    @Query("SELECT m FROM Match m WHERE m.homeTeam.id = :teamId OR m.awayTeam.id = :teamId")
+    Page<Match> findByTeamId(@Param("teamId") Long teamId, Pageable pageable);
 }

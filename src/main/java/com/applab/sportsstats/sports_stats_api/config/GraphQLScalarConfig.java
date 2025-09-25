@@ -38,6 +38,18 @@ public class GraphQLScalarConfig {
                 .build();
     }
 
+    @Bean
+    public GraphQLScalarType longScalar() {
+        return GraphQLScalarType.newScalar()
+                .name("Long")
+                .description("Long integer scalar")
+                .coercing(new SimpleCoercing<>(
+                        s -> Long.parseLong(s),
+                        v -> v.toString()
+                ))
+                .build();
+    }
+
     // Generic small coercing helper
     private static class SimpleCoercing<T> implements graphql.schema.Coercing<T, String> {
         private final java.util.function.Function<String, T> parse;

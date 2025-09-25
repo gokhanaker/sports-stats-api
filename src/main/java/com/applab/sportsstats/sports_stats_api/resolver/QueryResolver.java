@@ -1,10 +1,14 @@
 package com.applab.sportsstats.sports_stats_api.resolver;
 
+import com.applab.sportsstats.sports_stats_api.dto.*;
 import com.applab.sportsstats.sports_stats_api.entity.*;
 import com.applab.sportsstats.sports_stats_api.enums.Position;
 import com.applab.sportsstats.sports_stats_api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -383,6 +387,266 @@ public class QueryResolver {
         } catch (Exception e) {
             log.error("Error searching for players with name: '{}'", searchTerm, e);
             throw new RuntimeException("Unable to search players at this time");
+        }
+    }
+
+    // ========== PAGINATED QUERIES ==========
+
+    @QueryMapping
+    public Connection<Team> teamsPaginated(@Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Fetching teams with pagination: {}, sort: {}", pagination, sort);
+        
+        try {
+            // Apply defaults and validate
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("team");
+            
+            // Create pageable
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("id").ascending()
+            );
+            
+            Page<Team> teamPage = teamRepository.findAll(pageable);
+            Connection<Team> connection = Connection.from(teamPage);
+            
+            log.info("Successfully retrieved {} teams (page {}/{})", 
+                    teamPage.getContent().size(), 
+                    teamPage.getNumber() + 1, 
+                    teamPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error fetching paginated teams", e);
+            throw new RuntimeException("Unable to fetch teams at this time");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Player> playersPaginated(@Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Fetching players with pagination: {}, sort: {}", pagination, sort);
+        
+        try {
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("player");
+            
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("id").ascending()
+            );
+            
+            Page<Player> playerPage = playerRepository.findAll(pageable);
+            Connection<Player> connection = Connection.from(playerPage);
+            
+            log.info("Successfully retrieved {} players (page {}/{})", 
+                    playerPage.getContent().size(), 
+                    playerPage.getNumber() + 1, 
+                    playerPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error fetching paginated players", e);
+            throw new RuntimeException("Unable to fetch players at this time");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Match> matchesPaginated(@Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Fetching matches with pagination: {}, sort: {}", pagination, sort);
+        
+        try {
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("match");
+            
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("matchDate").descending()
+            );
+            
+            Page<Match> matchPage = matchRepository.findAll(pageable);
+            Connection<Match> connection = Connection.from(matchPage);
+            
+            log.info("Successfully retrieved {} matches (page {}/{})", 
+                    matchPage.getContent().size(), 
+                    matchPage.getNumber() + 1, 
+                    matchPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error fetching paginated matches", e);
+            throw new RuntimeException("Unable to fetch matches at this time");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Stats> statsPaginated(@Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Fetching stats with pagination: {}, sort: {}", pagination, sort);
+        
+        try {
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("stats");
+            
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("points").descending()
+            );
+            
+            Page<Stats> statsPage = statsRepository.findAll(pageable);
+            Connection<Stats> connection = Connection.from(statsPage);
+            
+            log.info("Successfully retrieved {} stats records (page {}/{})", 
+                    statsPage.getContent().size(), 
+                    statsPage.getNumber() + 1, 
+                    statsPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error fetching paginated stats", e);
+            throw new RuntimeException("Unable to fetch stats at this time");
+        }
+    }
+
+    // ========== PAGINATED SEARCH & FILTERING ==========
+
+    @QueryMapping
+    public Connection<Player> searchPlayersPaginated(@Argument String name, @Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Searching players with pagination. Name: '{}', pagination: {}, sort: {}", name, pagination, sort);
+        
+        // Validate search term
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Search name is required and cannot be empty");
+        }
+        
+        String searchTerm = name.trim();
+        if (searchTerm.length() < 2) {
+            throw new IllegalArgumentException("Search term must be at least 2 characters long");
+        }
+        if (searchTerm.length() > 50) {
+            throw new IllegalArgumentException("Search term cannot be longer than 50 characters");
+        }
+        
+        try {
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("player");
+            
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("lastName", "firstName").ascending()
+            );
+            
+            Page<Player> playerPage = playerRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+                    searchTerm, searchTerm, pageable);
+            Connection<Player> connection = Connection.from(playerPage);
+            
+            log.info("Search for '{}' returned {} players (page {}/{})", 
+                    searchTerm, 
+                    playerPage.getContent().size(), 
+                    playerPage.getNumber() + 1, 
+                    playerPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error searching players with pagination. Search term: '{}'", searchTerm, e);
+            throw new RuntimeException("Unable to search players at this time");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Player> playersByTeamPaginated(@Argument Long teamId, @Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Fetching players by team with pagination. TeamId: {}, pagination: {}, sort: {}", teamId, pagination, sort);
+        
+        // Validate team ID
+        if (teamId == null || teamId <= 0) {
+            throw new IllegalArgumentException("Team ID must be a positive number");
+        }
+        
+        try {
+            // Verify team exists
+            if (!teamRepository.existsById(teamId)) {
+                throw new RuntimeException("Team not found with id: " + teamId);
+            }
+            
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("player");
+            
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("jerseyNumber").ascending()
+            );
+            
+            Page<Player> playerPage = playerRepository.findByTeamId(teamId, pageable);
+            Connection<Player> connection = Connection.from(playerPage);
+            
+            log.info("Successfully retrieved {} players for team {} (page {}/{})", 
+                    playerPage.getContent().size(), 
+                    teamId,
+                    playerPage.getNumber() + 1, 
+                    playerPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error fetching players by team with pagination. TeamId: {}", teamId, e);
+            throw new RuntimeException("Unable to fetch players at this time");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Match> matchesByTeamPaginated(@Argument Long teamId, @Argument PaginationInput pagination, @Argument SortInput sort) {
+        log.info("Fetching matches by team with pagination. TeamId: {}, pagination: {}, sort: {}", teamId, pagination, sort);
+        
+        // Validate team ID
+        if (teamId == null || teamId <= 0) {
+            throw new IllegalArgumentException("Team ID must be a positive number");
+        }
+        
+        try {
+            // Verify team exists
+            if (!teamRepository.existsById(teamId)) {
+                throw new RuntimeException("Team not found with id: " + teamId);
+            }
+            
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("match");
+            
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("matchDate").descending()
+            );
+            
+            Page<Match> matchPage = matchRepository.findByTeamId(teamId, pageable);
+            Connection<Match> connection = Connection.from(matchPage);
+            
+            log.info("Successfully retrieved {} matches for team {} (page {}/{})", 
+                    matchPage.getContent().size(), 
+                    teamId,
+                    matchPage.getNumber() + 1, 
+                    matchPage.getTotalPages());
+            
+            return connection;
+        } catch (Exception e) {
+            log.error("Error fetching matches by team with pagination. TeamId: {}", teamId, e);
+            throw new RuntimeException("Unable to fetch matches at this time");
         }
     }
 }

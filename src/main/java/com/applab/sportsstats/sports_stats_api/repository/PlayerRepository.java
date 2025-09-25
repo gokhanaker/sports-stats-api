@@ -1,5 +1,7 @@
 package com.applab.sportsstats.sports_stats_api.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +34,10 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     
     @Query("SELECT p FROM Player p WHERE p.team.name = :teamName")
     List<Player> findByTeamName(@Param("teamName") String teamName);
+    
+    // Paginated versions
+    Page<Player> findByTeamId(Long teamId, Pageable pageable);
+    
+    Page<Player> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+            String firstName, String lastName, Pageable pageable);
 }

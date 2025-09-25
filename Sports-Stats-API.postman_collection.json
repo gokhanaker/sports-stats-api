@@ -483,6 +483,492 @@
       "description": "Advanced GraphQL queries with complex relationships"
     },
     {
+      "name": "Pagination & Sorting",
+      "item": [
+        {
+          "name": "Teams Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamsPaginated(pagination: { page: 0, size: 5 }, sort: { field: \\\"name\\\", direction: ASC }) { content { id name city foundedYear coachName totalWins totalLosses winPercentage } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get teams with pagination (page 0, size 5) sorted by name"
+          }
+        },
+        {
+          "name": "Players Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersPaginated(pagination: { page: 0, size: 10 }, sort: { field: \\\"lastName\\\", direction: ASC }) { content { id firstName lastName fullName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get players with pagination (page 0, size 10) sorted by last name"
+          }
+        },
+        {
+          "name": "Matches Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesPaginated(pagination: { page: 0, size: 8 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get matches with pagination (page 0, size 8) sorted by match date descending"
+          }
+        },
+        {
+          "name": "Stats Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ statsPaginated(pagination: { page: 0, size: 15 }, sort: { field: \\\"points\\\", direction: DESC }) { content { id points assists rebounds steals blocks fieldGoalPercentage threePointPercentage player { firstName lastName team { name } } match { matchDate venue } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get stats with pagination (page 0, size 15) sorted by points descending"
+          }
+        }
+      ],
+      "description": "Pagination and sorting examples for all entities"
+    },
+    {
+      "name": "Filtering",
+      "item": [
+        {
+          "name": "Players Filtered - By Team",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersFiltered(filter: { teamId: 1 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"jerseyNumber\\\", direction: ASC }) { content { id firstName lastName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter players by team ID with pagination and sorting by jersey number"
+          }
+        },
+        {
+          "name": "Players Filtered - By Position",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersFiltered(filter: { position: POINT_GUARD }, pagination: { page: 0, size: 10 }, sort: { field: \\\"averagePoints\\\", direction: DESC }) { content { id firstName lastName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter players by position (POINT_GUARD) sorted by average points"
+          }
+        },
+        {
+          "name": "Players Filtered - By Points Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersFiltered(filter: { minPoints: 15, maxPoints: 25 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"averagePoints\\\", direction: DESC }) { content { id firstName lastName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter players by average points range (15-25) sorted by points descending"
+          }
+        },
+        {
+          "name": "Players Filtered - By Jersey Number",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersFiltered(filter: { minJerseyNumber: 1, maxJerseyNumber: 10 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"jerseyNumber\\\", direction: ASC }) { content { id firstName lastName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter players by jersey number range (1-10) sorted by jersey number"
+          }
+        },
+        {
+          "name": "Matches Filtered - By Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesFiltered(filter: { status: COMPLETED }, pagination: { page: 0, size: 10 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter matches by status (COMPLETED) sorted by match date descending"
+          }
+        },
+        {
+          "name": "Matches Filtered - By Team",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesFiltered(filter: { teamId: 1 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter matches by team ID with pagination and sorting"
+          }
+        },
+        {
+          "name": "Matches Filtered - By Date Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesFiltered(filter: { dateFrom: \\\"2024-01-01T00:00:00\\\", dateTo: \\\"2024-12-31T23:59:59\\\" }, pagination: { page: 0, size: 10 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter matches by date range (2024) sorted by match date descending"
+          }
+        },
+        {
+          "name": "Matches Filtered - By Venue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesFiltered(filter: { venue: \\\"Staples Center\\\" }, pagination: { page: 0, size: 10 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter matches by venue with pagination and sorting"
+          }
+        },
+        {
+          "name": "Teams Filtered - By City",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamsFiltered(filter: { city: \\\"Los Angeles\\\" }, pagination: { page: 0, size: 10 }, sort: { field: \\\"name\\\", direction: ASC }) { content { id name city foundedYear coachName homeStadium totalWins totalLosses winPercentage } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter teams by city with pagination and sorting by name"
+          }
+        },
+        {
+          "name": "Teams Filtered - By Founded Year",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamsFiltered(filter: { minFoundedYear: 1940, maxFoundedYear: 1980 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"foundedYear\\\", direction: ASC }) { content { id name city foundedYear coachName homeStadium totalWins totalLosses winPercentage } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter teams by founded year range (1940-1980) sorted by founded year"
+          }
+        },
+        {
+          "name": "Teams Filtered - By Name Contains",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamsFiltered(filter: { nameContains: \\\"Lakers\\\" }, pagination: { page: 0, size: 10 }, sort: { field: \\\"name\\\", direction: ASC }) { content { id name city foundedYear coachName homeStadium totalWins totalLosses winPercentage } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Filter teams by name containing 'Lakers' with pagination and sorting"
+          }
+        }
+      ],
+      "description": "Advanced filtering examples for all entities"
+    },
+    {
+      "name": "Paginated Search",
+      "item": [
+        {
+          "name": "Search Players Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ searchPlayersPaginated(name: \\\"James\\\", pagination: { page: 0, size: 10 }, sort: { field: \\\"lastName\\\", direction: ASC }) { content { id firstName lastName fullName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Search for players with name containing 'James' using pagination and sorting"
+          }
+        },
+        {
+          "name": "Players By Team Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersByTeamPaginated(teamId: 1, pagination: { page: 0, size: 15 }, sort: { field: \\\"jerseyNumber\\\", direction: ASC }) { content { id firstName lastName fullName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get players by team ID with pagination and sorting by jersey number"
+          }
+        },
+        {
+          "name": "Matches By Team Paginated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesByTeamPaginated(teamId: 1, pagination: { page: 0, size: 12 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get matches by team ID with pagination and sorting by match date descending"
+          }
+        }
+      ],
+      "description": "Paginated search and team-specific queries"
+    },
+    {
+      "name": "Complex Combinations",
+      "item": [
+        {
+          "name": "Players Filtered - Multiple Criteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ playersFiltered(filter: { teamId: 1, position: POINT_GUARD, minJerseyNumber: 1, maxJerseyNumber: 15 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"averagePoints\\\", direction: DESC }) { content { id firstName lastName jerseyNumber position team { name } averagePoints averageAssists averageRebounds } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Complex filter: team 1, POINT_GUARD position, jersey 1-15, sorted by points"
+          }
+        },
+        {
+          "name": "Matches Filtered - Multiple Criteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ matchesFiltered(filter: { teamId: 1, status: COMPLETED, hasScore: true }, pagination: { page: 0, size: 10 }, sort: { field: \\\"matchDate\\\", direction: DESC }) { content { id matchDate venue status homeTeam { name } awayTeam { name } homeTeamScore awayTeamScore winner { name } } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Complex filter: team 1, completed matches with scores, sorted by date"
+          }
+        },
+        {
+          "name": "Teams Filtered - Multiple Criteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"{ teamsFiltered(filter: { city: \\\"Los Angeles\\\", minFoundedYear: 1940, maxFoundedYear: 1980 }, pagination: { page: 0, size: 10 }, sort: { field: \\\"winPercentage\\\", direction: DESC }) { content { id name city foundedYear coachName homeStadium totalWins totalLosses winPercentage } pageInfo { hasNextPage hasPreviousPage totalPages totalElements currentPage pageSize } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Complex filter: LA teams founded 1940-1980, sorted by win percentage"
+          }
+        }
+      ],
+      "description": "Complex filtering combinations with multiple criteria"
+    },
+    {
       "name": "Health Check",
       "item": [
         {

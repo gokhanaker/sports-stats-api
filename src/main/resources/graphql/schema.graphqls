@@ -174,6 +174,10 @@ input PlayerFilter {
   position: Position
   minPoints: Int
   maxPoints: Int
+  minAge: Int
+  maxAge: Int
+  minJerseyNumber: Int
+  maxJerseyNumber: Int
 }
 
 input MatchFilter {
@@ -181,6 +185,16 @@ input MatchFilter {
   status: MatchStatus
   dateFrom: DateTime
   dateTo: DateTime
+  venue: String
+  hasScore: Boolean
+}
+
+input TeamFilter {
+  city: String
+  minFoundedYear: Int
+  maxFoundedYear: Int
+  nameContains: String
+  coachName: String
 }
 
 enum SortOrder {
@@ -280,17 +294,54 @@ type Query {
   assistsLeaderboard(limit: Int): Leaderboard!
   reboundsLeaderboard(limit: Int): Leaderboard!
   searchPlayers(name: String!): [Player!]!
-  
+
   # New paginated queries
   teamsPaginated(pagination: PaginationInput, sort: SortInput): TeamConnection!
-  playersPaginated(pagination: PaginationInput, sort: SortInput): PlayerConnection!
-  matchesPaginated(pagination: PaginationInput, sort: SortInput): MatchConnection!
+  playersPaginated(
+    pagination: PaginationInput
+    sort: SortInput
+  ): PlayerConnection!
+  matchesPaginated(
+    pagination: PaginationInput
+    sort: SortInput
+  ): MatchConnection!
   statsPaginated(pagination: PaginationInput, sort: SortInput): StatsConnection!
-  
+
   # Paginated search and filtering
-  searchPlayersPaginated(name: String!, pagination: PaginationInput, sort: SortInput): PlayerConnection!
-  playersByTeamPaginated(teamId: ID!, pagination: PaginationInput, sort: SortInput): PlayerConnection!
-  matchesByTeamPaginated(teamId: ID!, pagination: PaginationInput, sort: SortInput): MatchConnection!
+  searchPlayersPaginated(
+    name: String!
+    pagination: PaginationInput
+    sort: SortInput
+  ): PlayerConnection!
+  playersByTeamPaginated(
+    teamId: ID!
+    pagination: PaginationInput
+    sort: SortInput
+  ): PlayerConnection!
+  matchesByTeamPaginated(
+    teamId: ID!
+    pagination: PaginationInput
+    sort: SortInput
+  ): MatchConnection!
+
+  # Enhanced filtered queries (with pagination)
+  playersFiltered(
+    filter: PlayerFilter
+    pagination: PaginationInput
+    sort: SortInput
+  ): PlayerConnection!
+
+  matchesFiltered(
+    filter: MatchFilter
+    pagination: PaginationInput
+    sort: SortInput
+  ): MatchConnection!
+
+  teamsFiltered(
+    filter: TeamFilter
+    pagination: PaginationInput
+    sort: SortInput
+  ): TeamConnection!
 }
 
 type Mutation {

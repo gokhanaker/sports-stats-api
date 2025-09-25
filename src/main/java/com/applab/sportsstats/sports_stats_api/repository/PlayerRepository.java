@@ -40,4 +40,38 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     
     Page<Player> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
             String firstName, String lastName, Pageable pageable);
+    
+    // Filtering methods
+    @Query("SELECT p FROM Player p WHERE " +
+           "(:teamId IS NULL OR p.team.id = :teamId) AND " +
+           "(:position IS NULL OR p.position = :position) AND " +
+           "(:minJerseyNumber IS NULL OR p.jerseyNumber >= :minJerseyNumber) AND " +
+           "(:maxJerseyNumber IS NULL OR p.jerseyNumber <= :maxJerseyNumber)")
+    Page<Player> findWithBasicFilters(
+        @Param("teamId") Long teamId,
+        @Param("position") Position position,
+        @Param("minJerseyNumber") Integer minJerseyNumber,
+        @Param("maxJerseyNumber") Integer maxJerseyNumber,
+        Pageable pageable
+    );
+    
+    // Advanced filtering with stats aggregation
+    @Query("SELECT DISTINCT p FROM Player p " +
+           "LEFT JOIN p.stats s " +
+           "WHERE (:teamId IS NULL OR p.team.id = :teamId) " +
+           "AND (:position IS NULL OR p.position = :position) " +
+           "AND (:minJerseyNumber IS NULL OR p.jerseyNumber >= :minJerseyNumber) " +
+           "AND (:maxJerseyNumber IS NULL OR p.jerseyNumber <= :maxJerseyNumber) " +
+           "GROUP BY p.id " +
+           "HAVING (:minPoints IS NULL OR AVG(s.points) >= :minPoints) " +
+           "AND (:maxPoints IS NULL OR AVG(s.points) <= :maxPoints)")
+    Page<Player> findWithAdvancedFilters(
+        @Param("teamId") Long teamId,
+        @Param("position") Position position,
+        @Param("minJerseyNumber") Integer minJerseyNumber,
+        @Param("maxJerseyNumber") Integer maxJerseyNumber,
+        @Param("minPoints") Integer minPoints,
+        @Param("maxPoints") Integer maxPoints,
+        Pageable pageable
+    );
 }

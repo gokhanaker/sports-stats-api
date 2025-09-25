@@ -649,4 +649,196 @@ public class QueryResolver {
             throw new RuntimeException("Unable to fetch matches at this time");
         }
     }
+
+    // ========== FILTERED QUERIES ==========
+
+    @QueryMapping
+    public Connection<Player> playersFiltered(
+            @Argument PlayerFilter filter, 
+            @Argument PaginationInput pagination, 
+            @Argument SortInput sort) {
+        
+        log.info("Fetching players with filter: {}, pagination: {}, sort: {}", filter, pagination, sort);
+        
+        try {
+            // Set defaults and validate
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("player");
+            if (filter != null) filter.validate();
+            
+            // Create pageable
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("id").ascending()
+            );
+            
+            Page<Player> playerPage;
+            
+            if (filter == null || !filter.hasFilters()) {
+                // No filters - use simple findAll
+                log.debug("No filters applied, fetching all players");
+                playerPage = playerRepository.findAll(pageable);
+            } else if (filter.getMinPoints() != null || filter.getMaxPoints() != null) {
+                // Advanced filtering with stats aggregation
+                log.debug("Using advanced filtering with stats: minPoints={}, maxPoints={}", 
+                         filter.getMinPoints(), filter.getMaxPoints());
+                playerPage = playerRepository.findWithAdvancedFilters(
+                    filter.getTeamId(),
+                    filter.getPosition(),
+                    filter.getMinJerseyNumber(),
+                    filter.getMaxJerseyNumber(),
+                    filter.getMinPoints(),
+                    filter.getMaxPoints(),
+                    pageable
+                );
+            } else {
+                // Basic filtering without stats
+                log.debug("Using basic filtering: teamId={}, position={}, jerseyRange={}-{}", 
+                         filter.getTeamId(), filter.getPosition(), 
+                         filter.getMinJerseyNumber(), filter.getMaxJerseyNumber());
+                playerPage = playerRepository.findWithBasicFilters(
+                    filter.getTeamId(),
+                    filter.getPosition(),
+                    filter.getMinJerseyNumber(),
+                    filter.getMaxJerseyNumber(),
+                    pageable
+                );
+            }
+            
+            Connection<Player> connection = Connection.from(playerPage);
+            
+            log.info("Filter returned {} players (page {}/{})", 
+                    playerPage.getContent().size(), 
+                    playerPage.getNumber() + 1, 
+                    playerPage.getTotalPages());
+            
+            return connection;
+            
+        } catch (Exception e) {
+            log.error("Error fetching filtered players", e);
+            throw new RuntimeException("Unable to fetch players with the specified filters");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Match> matchesFiltered(
+            @Argument MatchFilter filter, 
+            @Argument PaginationInput pagination, 
+            @Argument SortInput sort) {
+        
+        log.info("Fetching matches with filter: {}, pagination: {}, sort: {}", filter, pagination, sort);
+        
+        try {
+            // Set defaults and validate
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("match");
+            if (filter != null) filter.validate();
+            
+            // Create pageable
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("matchDate").descending()
+            );
+            
+            Page<Match> matchPage;
+            
+            if (filter == null || !filter.hasFilters()) {
+                // No filters - use simple findAll
+                log.debug("No filters applied, fetching all matches");
+                matchPage = matchRepository.findAll(pageable);
+            } else {
+                // Apply filters
+                log.debug("Using match filtering: teamId={}, status={}, dateRange={} to {}, venue={}, hasScore={}", 
+                         filter.getTeamId(), filter.getStatus(), filter.getDateFrom(), 
+                         filter.getDateTo(), filter.getVenue(), filter.getHasScore());
+                matchPage = matchRepository.findWithFilters(
+                    filter.getTeamId(),
+                    filter.getStatus(),
+                    filter.getDateFrom(),
+                    filter.getDateTo(),
+                    filter.getVenue(),
+                    filter.getHasScore(),
+                    pageable
+                );
+            }
+            
+            Connection<Match> connection = Connection.from(matchPage);
+            
+            log.info("Filter returned {} matches (page {}/{})", 
+                    matchPage.getContent().size(), 
+                    matchPage.getNumber() + 1, 
+                    matchPage.getTotalPages());
+            
+            return connection;
+            
+        } catch (Exception e) {
+            log.error("Error fetching filtered matches", e);
+            throw new RuntimeException("Unable to fetch matches with the specified filters");
+        }
+    }
+
+    @QueryMapping
+    public Connection<Team> teamsFiltered(
+            @Argument TeamFilter filter, 
+            @Argument PaginationInput pagination, 
+            @Argument SortInput sort) {
+        
+        log.info("Fetching teams with filter: {}, pagination: {}, sort: {}", filter, pagination, sort);
+        
+        try {
+            // Set defaults and validate
+            if (pagination == null) pagination = new PaginationInput();
+            pagination.validate();
+            
+            if (sort != null) sort.validate("team");
+            if (filter != null) filter.validate();
+            
+            // Create pageable
+            Pageable pageable = PageRequest.of(
+                pagination.getValidatedPage(),
+                pagination.getValidatedSize(),
+                sort != null ? sort.toSpringSort() : org.springframework.data.domain.Sort.by("name").ascending()
+            );
+            
+            Page<Team> teamPage;
+            
+            if (filter == null || !filter.hasFilters()) {
+                // No filters - use simple findAll
+                log.debug("No filters applied, fetching all teams");
+                teamPage = teamRepository.findAll(pageable);
+            } else {
+                // Apply filters  
+                log.debug("Using team filtering: city={}, foundedYearRange={}-{}, nameContains={}, coachName={}", 
+                         filter.getCity(), filter.getMinFoundedYear(), 
+                         filter.getMaxFoundedYear(), filter.getNameContains(), filter.getCoachName());
+                teamPage = teamRepository.findWithFilters(
+                    filter.getCity(),
+                    filter.getMinFoundedYear(),
+                    filter.getMaxFoundedYear(),
+                    filter.getNameContains(),
+                    filter.getCoachName(),
+                    pageable
+                );
+            }
+            
+            Connection<Team> connection = Connection.from(teamPage);
+            
+            log.info("Filter returned {} teams (page {}/{})", 
+                    teamPage.getContent().size(), 
+                    teamPage.getNumber() + 1, 
+                    teamPage.getTotalPages());
+            
+            return connection;
+            
+        } catch (Exception e) {
+            log.error("Error fetching filtered teams", e);
+            throw new RuntimeException("Unable to fetch teams with the specified filters");
+        }
+    }
 }

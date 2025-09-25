@@ -34,6 +34,8 @@ spring:
         enabled: true
     http:
       path: /graphql # GraphQL endpoint path
+    websocket:
+      path: /graphql # WebSocket endpoint for subscriptions
 
 # Server configuration
 server:

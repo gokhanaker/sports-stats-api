@@ -9,7 +9,9 @@ import com.applab.sportsstats.sports_stats_api.repository.MatchRepository;
 import com.applab.sportsstats.sports_stats_api.repository.PlayerRepository;
 import com.applab.sportsstats.sports_stats_api.repository.StatsRepository;
 import com.applab.sportsstats.sports_stats_api.repository.TeamRepository;
+import com.applab.sportsstats.sports_stats_api.service.MatchEventPublisher;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @Transactional
@@ -30,6 +33,7 @@ public class MutationResolver {
     private final PlayerRepository playerRepository;
     private final MatchRepository matchRepository;
     private final StatsRepository statsRepository;
+    private final MatchEventPublisher matchEventPublisher;
 
     // ==================== TEAM MUTATIONS ====================
 
@@ -156,32 +160,91 @@ public class MutationResolver {
 
     @MutationMapping
     public Match updateMatchScore(@Argument("input") @Valid UpdateMatchScoreInput input) {
+        log.info("Updating match score for match ID: {}, homeScore: {}, awayScore: {}", 
+                input.matchId(), input.homeTeamScore(), input.awayTeamScore());
+        
         Match match = matchRepository.findById(input.matchId())
                 .orElseThrow(() -> new IllegalArgumentException("Match not found with id: " + input.matchId()));
 
+        // Store old values for logging
+        Integer oldHomeScore = match.getHomeTeamScore();
+        Integer oldAwayScore = match.getAwayTeamScore();
+        Match.MatchStatus oldStatus = match.getStatus();
+
+        // Update match scores and status
         match.setHomeTeamScore(input.homeTeamScore());
         match.setAwayTeamScore(input.awayTeamScore());
         match.setStatus(input.status());
         
-        return matchRepository.save(match);
+        Match savedMatch = matchRepository.save(match);
+        
+        // Log the changes
+        log.debug("Match scores updated - Match ID: {}, Home: {} → {}, Away: {} → {}, Status: {} → {}", 
+                match.getId(), oldHomeScore, input.homeTeamScore(), 
+                oldAwayScore, input.awayTeamScore(), oldStatus, input.status());
+
+        // Publish the match score update event for subscriptions
+        try {
+            matchEventPublisher.publishMatchScoreUpdate(savedMatch);
+            log.debug("Published match score update event for match ID: {}", match.getId());
+        } catch (Exception e) {
+            log.error("Failed to publish match score update event for match ID: {}", match.getId(), e);
+            // Don't fail the mutation if event publishing fails
+        }
+        
+        return savedMatch;
     }
 
     @MutationMapping
     public Match startMatch(@Argument Long matchId) {
+        log.info("Starting match with ID: {}", matchId);
+        
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("Match not found with id: " + matchId));
         
+        Match.MatchStatus oldStatus = match.getStatus();
         match.setStatus(Match.MatchStatus.LIVE);
-        return matchRepository.save(match);
+        Match savedMatch = matchRepository.save(match);
+        
+        log.debug("Match status updated - Match ID: {}, Status: {} → {}", 
+                matchId, oldStatus, Match.MatchStatus.LIVE);
+
+        // Publish the match status update event for subscriptions
+        try {
+            matchEventPublisher.publishMatchStatusUpdate(savedMatch);
+            log.debug("Published match status update event for match ID: {}", matchId);
+        } catch (Exception e) {
+            log.error("Failed to publish match status update event for match ID: {}", matchId, e);
+            // Don't fail the mutation if event publishing fails
+        }
+        
+        return savedMatch;
     }
 
     @MutationMapping
     public Match endMatch(@Argument Long matchId) {
+        log.info("Ending match with ID: {}", matchId);
+        
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("Match not found with id: " + matchId));
         
+        Match.MatchStatus oldStatus = match.getStatus();
         match.setStatus(Match.MatchStatus.COMPLETED);
-        return matchRepository.save(match);
+        Match savedMatch = matchRepository.save(match);
+        
+        log.debug("Match status updated - Match ID: {}, Status: {} → {}", 
+                matchId, oldStatus, Match.MatchStatus.COMPLETED);
+
+        // Publish the match status update event for subscriptions
+        try {
+            matchEventPublisher.publishMatchStatusUpdate(savedMatch);
+            log.debug("Published match status update event for match ID: {}", matchId);
+        } catch (Exception e) {
+            log.error("Failed to publish match status update event for match ID: {}", matchId, e);
+            // Don't fail the mutation if event publishing fails
+        }
+        
+        return savedMatch;
     }
 
     // ==================== STATS MUTATIONS ====================

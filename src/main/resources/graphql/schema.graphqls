@@ -360,8 +360,16 @@ type Mutation {
 }
 
 type Subscription {
-  matchScoreUpdated(matchId: ID!): Match!
+  # Live match score updates for a specific match
+  matchScoreUpdate(matchId: ID!): Match!
+
+  # All live match updates across all matches
   liveMatchUpdates: Match!
+
+  # Match status changes (SCHEDULED -> LIVE -> COMPLETED)
+  matchStatusUpdate(matchId: ID!): Match!
+
+  # Future subscription types
   leaderboardUpdated(category: String!): Leaderboard!
   teamStatsUpdated(teamId: ID!): Team!
 }

@@ -13,7 +13,9 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -839,6 +841,103 @@ public class QueryResolver {
         } catch (Exception e) {
             log.error("Error fetching filtered teams", e);
             throw new RuntimeException("Unable to fetch teams with the specified filters");
+        }
+    }
+
+    // Leaderboard Queries
+    @QueryMapping
+    public Leaderboard pointsLeaderboard(@Argument Integer limit) {
+        log.info("Fetching points leaderboard with limit: {}", limit);
+        try {
+            List<Object[]> results = statsRepository.findTotalPointsLeaderboard();
+            List<LeaderboardEntry> entries = new ArrayList<>();
+            
+            int maxEntries = limit != null ? Math.min(limit, results.size()) : results.size();
+            int rank = 1;
+            
+            for (int i = 0; i < maxEntries; i++) {
+                Object[] row = results.get(i);
+                Long playerId = (Long) row[0];
+                String firstName = (String) row[1];
+                String lastName = (String) row[2];
+                Double totalPoints = ((Number) row[3]).doubleValue();
+                
+                // Fetch the full player object
+                Player player = playerRepository.findById(playerId).orElse(null);
+                if (player != null) {
+                    entries.add(new LeaderboardEntry(player, totalPoints, rank++));
+                }
+            }
+            
+            return new Leaderboard("Points", entries, OffsetDateTime.now(ZoneOffset.UTC));
+            
+        } catch (Exception e) {
+            log.error("Error fetching points leaderboard", e);
+            throw new RuntimeException("Unable to fetch points leaderboard");
+        }
+    }
+
+    @QueryMapping
+    public Leaderboard assistsLeaderboard(@Argument Integer limit) {
+        log.info("Fetching assists leaderboard with limit: {}", limit);
+        try {
+            List<Object[]> results = statsRepository.findTotalAssistsLeaderboard();
+            List<LeaderboardEntry> entries = new ArrayList<>();
+            
+            int maxEntries = limit != null ? Math.min(limit, results.size()) : results.size();
+            int rank = 1;
+            
+            for (int i = 0; i < maxEntries; i++) {
+                Object[] row = results.get(i);
+                Long playerId = (Long) row[0];
+                String firstName = (String) row[1];
+                String lastName = (String) row[2];
+                Double totalAssists = ((Number) row[3]).doubleValue();
+                
+                // Fetch the full player object
+                Player player = playerRepository.findById(playerId).orElse(null);
+                if (player != null) {
+                    entries.add(new LeaderboardEntry(player, totalAssists, rank++));
+                }
+            }
+            
+            return new Leaderboard("Assists", entries, OffsetDateTime.now(ZoneOffset.UTC));
+            
+        } catch (Exception e) {
+            log.error("Error fetching assists leaderboard", e);
+            throw new RuntimeException("Unable to fetch assists leaderboard");
+        }
+    }
+
+    @QueryMapping
+    public Leaderboard reboundsLeaderboard(@Argument Integer limit) {
+        log.info("Fetching rebounds leaderboard with limit: {}", limit);
+        try {
+            List<Object[]> results = statsRepository.findTotalReboundsLeaderboard();
+            List<LeaderboardEntry> entries = new ArrayList<>();
+            
+            int maxEntries = limit != null ? Math.min(limit, results.size()) : results.size();
+            int rank = 1;
+            
+            for (int i = 0; i < maxEntries; i++) {
+                Object[] row = results.get(i);
+                Long playerId = (Long) row[0];
+                String firstName = (String) row[1];
+                String lastName = (String) row[2];
+                Double totalRebounds = ((Number) row[3]).doubleValue();
+                
+                // Fetch the full player object
+                Player player = playerRepository.findById(playerId).orElse(null);
+                if (player != null) {
+                    entries.add(new LeaderboardEntry(player, totalRebounds, rank++));
+                }
+            }
+            
+            return new Leaderboard("Rebounds", entries, OffsetDateTime.now(ZoneOffset.UTC));
+            
+        } catch (Exception e) {
+            log.error("Error fetching rebounds leaderboard", e);
+            throw new RuntimeException("Unable to fetch rebounds leaderboard");
         }
     }
 }

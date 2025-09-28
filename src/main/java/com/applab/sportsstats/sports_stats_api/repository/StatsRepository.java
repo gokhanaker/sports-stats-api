@@ -50,4 +50,24 @@ public interface StatsRepository extends JpaRepository<Stats, Long> {
            "FROM Stats s GROUP BY s.player.id, s.player.firstName, s.player.lastName " +
            "ORDER BY totalPoints DESC")
     List<Object[]> findTotalPointsLeaderboard();
+    
+    @Query("SELECT s.player.id, s.player.firstName, s.player.lastName, AVG(s.assists) as avgAssists " +
+           "FROM Stats s GROUP BY s.player.id, s.player.firstName, s.player.lastName " +
+           "ORDER BY avgAssists DESC")
+    List<Object[]> findAverageAssistsLeaderboard();
+    
+    @Query("SELECT s.player.id, s.player.firstName, s.player.lastName, SUM(s.assists) as totalAssists " +
+           "FROM Stats s GROUP BY s.player.id, s.player.firstName, s.player.lastName " +
+           "ORDER BY totalAssists DESC")
+    List<Object[]> findTotalAssistsLeaderboard();
+    
+    @Query("SELECT s.player.id, s.player.firstName, s.player.lastName, AVG(s.rebounds) as avgRebounds " +
+           "FROM Stats s GROUP BY s.player.id, s.player.firstName, s.player.lastName " +
+           "ORDER BY avgRebounds DESC")
+    List<Object[]> findAverageReboundsLeaderboard();
+    
+    @Query("SELECT s.player.id, s.player.firstName, s.player.lastName, SUM(s.rebounds) as totalRebounds " +
+           "FROM Stats s GROUP BY s.player.id, s.player.firstName, s.player.lastName " +
+           "ORDER BY totalRebounds DESC")
+    List<Object[]> findTotalReboundsLeaderboard();
 }

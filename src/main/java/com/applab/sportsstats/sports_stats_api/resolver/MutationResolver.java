@@ -20,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Slf4j
@@ -363,7 +364,7 @@ public class MutationResolver {
     ) {}
 
     public record CreateMatchInput(
-            @NotNull(message = "Match date is required") @Future(message = "Match date must be in the future") LocalDateTime matchDate,
+            @NotNull(message = "Match date is required") @Future(message = "Match date must be in the future") OffsetDateTime matchDate,
             @NotBlank(message = "Venue is required") String venue,
             @NotNull(message = "Home team ID is required") Long homeTeamId,
             @NotNull(message = "Away team ID is required") Long awayTeamId

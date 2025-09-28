@@ -8,14 +8,14 @@ import org.springframework.data.repository.query.Param;
 
 import com.applab.sportsstats.sports_stats_api.entity.Match;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
     
     List<Match> findByStatus(Match.MatchStatus status);
     
-    List<Match> findByMatchDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Match> findByMatchDateBetween(OffsetDateTime startDate, OffsetDateTime endDate);
     
     @Query("SELECT m FROM Match m WHERE m.homeTeam.id = :teamId OR m.awayTeam.id = :teamId")
     List<Match> findByTeamId(@Param("teamId") Long teamId);
@@ -33,7 +33,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findLiveMatches();
     
     @Query("SELECT m FROM Match m WHERE m.matchDate > :currentDate ORDER BY m.matchDate ASC")
-    List<Match> findUpcomingMatches(@Param("currentDate") LocalDateTime currentDate);
+    List<Match> findUpcomingMatches(@Param("currentDate") OffsetDateTime currentDate);
     
     // Paginated version
     @Query("SELECT m FROM Match m WHERE m.homeTeam.id = :teamId OR m.awayTeam.id = :teamId")
@@ -52,8 +52,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     Page<Match> findWithFilters(
         @Param("teamId") Long teamId,
         @Param("status") Match.MatchStatus status,
-        @Param("dateFrom") LocalDateTime dateFrom,
-        @Param("dateTo") LocalDateTime dateTo,
+        @Param("dateFrom") OffsetDateTime dateFrom,
+        @Param("dateTo") OffsetDateTime dateTo,
         @Param("venue") String venue,
         @Param("hasScore") Boolean hasScore,
         Pageable pageable

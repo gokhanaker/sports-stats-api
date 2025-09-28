@@ -13,7 +13,7 @@ public class GraphQLConfig {
     public RuntimeWiringConfigurer runtimeWiringConfigurer() {
         return builder -> builder
                 .scalar(ExtendedScalars.Date)
-                .scalar(ExtendedScalars.DateTime)
+                .scalar(ExtendedScalars.DateTime)  // This expects OffsetDateTime
                 .scalar(ExtendedScalars.GraphQLLong);
     }
 

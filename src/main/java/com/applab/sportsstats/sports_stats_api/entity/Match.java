@@ -3,7 +3,8 @@ package com.applab.sportsstats.sports_stats_api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,7 @@ public class Match {
     private Long id;
     
     @Column(name = "match_date", nullable = false)
-    private LocalDateTime matchDate;
+    private OffsetDateTime matchDate;
     
     @Column(nullable = false)
     private String venue;
@@ -58,11 +59,11 @@ public class Match {
     private List<Stats> stats;
     
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
     
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
     
     public enum MatchStatus {

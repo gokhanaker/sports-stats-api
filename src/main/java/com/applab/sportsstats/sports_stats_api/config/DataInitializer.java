@@ -9,7 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 
 @Component
@@ -69,15 +70,15 @@ public class DataInitializer implements CommandLineRunner {
                                     LocalDate.of(1997, 7, 18), 206, 116, heat);
 
         // Create Matches
-        Match match1 = createMatch(LocalDateTime.of(2024, 1, 15, 20, 0), 
+        Match match1 = createMatch(OffsetDateTime.of(2024, 1, 15, 20, 0, 0, 0, ZoneOffset.UTC), 
                                  "Crypto.com Arena", Match.MatchStatus.COMPLETED, 
                                  lakers, warriors, 112, 108);
 
-        Match match2 = createMatch(LocalDateTime.of(2024, 1, 20, 19, 30), 
+        Match match2 = createMatch(OffsetDateTime.of(2024, 1, 20, 19, 30, 0, 0, ZoneOffset.UTC), 
                                  "TD Garden", Match.MatchStatus.COMPLETED, 
                                  celtics, heat, 118, 102);
 
-        Match match3 = createMatch(LocalDateTime.of(2024, 1, 25, 21, 0), 
+        Match match3 = createMatch(OffsetDateTime.of(2024, 1, 25, 21, 0, 0, 0, ZoneOffset.UTC), 
                                  "Chase Center", Match.MatchStatus.LIVE, 
                                  warriors, celtics, 95, 88);
 
@@ -130,7 +131,7 @@ public class DataInitializer implements CommandLineRunner {
         return playerRepository.save(player);
     }
 
-    private Match createMatch(LocalDateTime matchDate, String venue, Match.MatchStatus status,
+    private Match createMatch(OffsetDateTime matchDate, String venue, Match.MatchStatus status,
                             Team homeTeam, Team awayTeam, Integer homeScore, Integer awayScore) {
         Match match = Match.builder()
                 .matchDate(matchDate)

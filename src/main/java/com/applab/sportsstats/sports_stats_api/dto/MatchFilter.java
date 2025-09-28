@@ -4,15 +4,15 @@ import com.applab.sportsstats.sports_stats_api.entity.Match;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Slf4j
 public class MatchFilter {
     private Long teamId;
     private Match.MatchStatus status;
-    private LocalDateTime dateFrom;
-    private LocalDateTime dateTo;
+    private OffsetDateTime dateFrom;
+    private OffsetDateTime dateTo;
     private String venue;
     private Boolean hasScore; // true = completed matches with scores, false = matches without scores
     

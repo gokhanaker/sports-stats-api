@@ -425,7 +425,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"{ searchPlayers(query: \\\"James\\\") { id firstName lastName fullName jerseyNumber position team { name } averagePoints } }\"\n}"
+              "raw": "{\n  \"query\": \"{ searchPlayers(name: \\\"James\\\") { id firstName lastName fullName jerseyNumber position team { name } averagePoints } }\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/graphql",

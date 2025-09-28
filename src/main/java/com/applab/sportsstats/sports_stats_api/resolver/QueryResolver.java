@@ -940,4 +940,18 @@ public class QueryResolver {
             throw new RuntimeException("Unable to fetch rebounds leaderboard");
         }
     }
+
+    @QueryMapping
+    public List<Match> upcomingMatches() {
+        log.info("Fetching upcoming matches");
+        try {
+            OffsetDateTime currentDate = OffsetDateTime.now(ZoneOffset.UTC);
+            List<Match> upcomingMatches = matchRepository.findUpcomingMatches(currentDate);
+            log.info("Successfully retrieved {} upcoming matches", upcomingMatches.size());
+            return upcomingMatches;
+        } catch (Exception e) {
+            log.error("Error fetching upcoming matches", e);
+            throw new RuntimeException("Unable to fetch upcoming matches");
+        }
+    }
 }
